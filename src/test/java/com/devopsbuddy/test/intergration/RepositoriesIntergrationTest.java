@@ -40,26 +40,24 @@ public class RepositoriesIntergrationTest {
     private UserRepository userRepository;
 
 
-
-
     @Before
-    public void  init(){
+    public void init() {
         Assert.assertNotNull(planRepository);
         Assert.assertNotNull(roleRepository);
         Assert.assertNotNull(userRepository);
     }
 
     @Test
-    public  void testCreateNewPlan() throws Exception{
-        Plan basicPlan = createBasicPlan(PlansEnum.BASIC);
+    public void testCreateNewPlan() throws Exception {
+        Plan basicPlan = createPlan(PlansEnum.BASIC);
         planRepository.save(basicPlan);
-        Plan retrievedPlan =planRepository.findOne(PlansEnum.BASIC.getId());
+        Plan retrievedPlan = planRepository.findOne(PlansEnum.BASIC.getId());
         Assert.assertNotNull(retrievedPlan);
     }
 
     @Test
-    public void testCreateNewRole() throws Exception{
-        Role userRole = createBasicRole(RolesEnum.BASIC);
+    public void testCreateNewRole() throws Exception {
+        Role userRole = createRole(RolesEnum.BASIC);
         roleRepository.save(userRole);
 
         Role retrievedRole = roleRepository.findOne(RolesEnum.BASIC.getId());
@@ -68,72 +66,60 @@ public class RepositoriesIntergrationTest {
     }
 
     @Test
-    public void createNewUser(){
-        //Create and save plan record
-        Plan basicPlan = createBasicPlan(PlansEnum.BASIC);
-        planRepository.save(basicPlan);
+    public void createNewUser() throws  Exception{
 
-        /** Create User instance and se the Plan (basicPlan) saced entity as Foreign Key */
-        User basicUser  = UserUtils.createBasicUser();
-        basicUser.setPlan(basicPlan);
+        User basicUser = createUser();
 
-        /** Sets a collection  in the User entity . We add the UserRole object
-         * set with the User and Role  object we just created
-         */
-        Role basicRole = createBasicRole(RolesEnum.BASIC);
-        Set<UserRole> userRoles =  new HashSet<>();
-        UserRole userRole = new UserRole(basicUser,basicRole);
-        userRoles.add(userRole);
-
-        /**
-         * IMPORTANT
-         * To add values to a JPA Entity
-         * ALWAYS use the geter method first and all the objects afterwards
-         */
-
-        basicUser.getUserRoles().addAll(userRoles);
-
-        /**
-         * Saves the other side of the User to Roles relationship
-         * by persisting all Roles in the UserRoles collection
-         */
-        for (UserRole ur: userRoles){
-            roleRepository.save(ur.getRole());
-        }
-
-        /**
-         * Saves the user and the run the findOne method to retrieve the user
-         * if all relationships contain data the repositories work correctly
-         */
-
-        basicUser =userRepository.save(basicUser);
         User newlyCreatedUser = userRepository.findOne(basicUser.getId());
         Assert.assertNotNull(newlyCreatedUser);
-        Assert.assertTrue(newlyCreatedUser.getId() !=0);
+        Assert.assertTrue(newlyCreatedUser.getId() != 0);
         Assert.assertNotNull(newlyCreatedUser.getPlan());
         Assert.assertNotNull(newlyCreatedUser.getPlan().getId());
         Set<UserRole> newlyCreatedUserUserRoles = newlyCreatedUser.getUserRoles();
 
-        for (UserRole ur : newlyCreatedUserUserRoles){
+        for (UserRole ur : newlyCreatedUserUserRoles) {
             Assert.assertNotNull(ur.getRole());
             Assert.assertNotNull(ur.getRole().getId());
         }
-
-
-
     }
 
-    private Role createBasicRole(RolesEnum rolesEnum) {
+    @Test
+    public void testDeleteUser() throws Exception{
+        User basicUser = createUser();
+        userRepository.delete(basicUser.getId()); //Delete with user_id not the whole entity
+    }
+
+    private Role createRole(RolesEnum rolesEnum) {
         return new Role(rolesEnum);
     }
 
 
     // private methods
 
-    private Plan createBasicPlan(PlansEnum plansEnum){
-        return  new Plan(plansEnum);
+    private Plan createPlan(PlansEnum plansEnum) {
+        return new Plan(plansEnum);
     }
 
+    private User createUser() {
+        Plan basicPlan = createPlan(PlansEnum.BASIC);
+        planRepository.save(basicPlan);
+
+        User basicUser = UserUtils.createBasicUser();
+        basicUser.setPlan(basicPlan);
+
+        Role basicRole = createRole(RolesEnum.BASIC);
+        roleRepository.save(basicRole);
+
+        Set<UserRole> userRoles = new HashSet<>();
+        UserRole userRole = new UserRole(basicUser, basicRole);
+        userRoles.add(userRole);
+
+        basicUser.getUserRoles().addAll(userRoles);
+        basicUser = userRepository.save(basicUser);
+
+        return basicUser;
+
+    }
 
 
 }
