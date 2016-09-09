@@ -17,6 +17,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by larris on 05/09/16.
@@ -24,7 +25,7 @@ import java.util.Set;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = DevopsbuddyApplication.class)
-public class UserIntergrationTest extends AbstractIntegrationTest {
+public class UserRepositoryIntergrationTest extends AbstractIntegrationTest {
 
 
     @Rule public TestName testName = new TestName();
@@ -84,5 +85,33 @@ public class UserIntergrationTest extends AbstractIntegrationTest {
         User basicUser = createUser(usename,email);
         userRepository.delete(basicUser.getId()); //Delete with user_id not the whole entity
     }
+
+    @Test
+    public  void testGetUserByEmail(){
+        User user = createUser(testName);
+
+        User newlyFoundedUser = userRepository.findByEmail(user.getEmail());
+        Assert.assertNotNull(newlyFoundedUser);
+        Assert.assertNotNull(newlyFoundedUser.getId());
+    }
+
+    @Test
+    public void updateUserPassword() throws Exception{
+        User user = createUser(testName);
+        Assert.assertNotNull(user);
+        Assert.assertNotNull(user.getId());
+
+        String newPassword = UUID.randomUUID().toString();
+
+        userRepository.updateUserPassword(user.getId(),newPassword);
+
+        user = userRepository.findOne(user.getId());
+
+        Assert.assertEquals(newPassword,user.getPassword());
+
+
+
+    }
+
 
 }
