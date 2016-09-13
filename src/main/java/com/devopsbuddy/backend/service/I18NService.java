@@ -1,4 +1,4 @@
-package com.devopsbuddy.web.i18n;
+package com.devopsbuddy.backend.service;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class I18NService {
 
     /** The application logger **/
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(I18NService.class);
-    
+
     @Autowired
     private MessageSource messageSource;
 

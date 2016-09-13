@@ -24,6 +24,7 @@ public class ContactController {
     public static final String FEEDBACK_MODEL_KEY = "feedback";
 
     //Contact Us view name
+
     private  static  final  String CONTACT_US_VIEW_NAME = "contact/contact";
 
     @Autowired

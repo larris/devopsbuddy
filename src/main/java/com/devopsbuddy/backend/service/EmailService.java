@@ -12,12 +12,12 @@ public interface EmailService {
      * Sends an email with the content in the feedbackPojo
      * @param feedbackPojo
      */
-    public void sendFeedbackEmail(FeedbackPojo feedbackPojo);
+     void sendFeedbackEmail(FeedbackPojo feedbackPojo);
 
     /**
      * Sends an email with the content of the Simple Mail Message Object
      * @param message
      */
-    public void sendGenericEmaiMessage(SimpleMailMessage message);
+     void sendGenericEmaiMessage(SimpleMailMessage message);
 
 }
